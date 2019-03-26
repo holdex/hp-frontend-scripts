@@ -20,3 +20,7 @@ This packages includes scripts and configuration used by Holdex Platform Apps. B
      - BUILD_FOLDER (default /build)
 
 #####test: `holdex-scripts test --env=jsdom`
+
+
+#### How To install
+    yarn add holdex-scripts@https://bitbucket.org/holdex/hp-frontend-scripts#<tag>
