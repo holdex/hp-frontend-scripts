@@ -2,6 +2,7 @@
 
 const autoprefixer = require('autoprefixer');
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
@@ -189,7 +190,7 @@ module.exports = {
 								],
 							],
 							cacheDirectory: true,
-							cacheCompression: isEnvProduction,
+							cacheCompression: false,
 
 							// If an error happens in a package, it's possible to be
 							// because it was compiled. Thus, we don't want the browser
