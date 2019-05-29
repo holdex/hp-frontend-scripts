@@ -4,7 +4,8 @@
     "files": [
         "bin",
         "config",
-        "lib"
+        "lib",
+        "scripts"
     ],
     "bin": {
         "holdex-scripts": "./bin/scripts.js"
