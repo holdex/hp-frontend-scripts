@@ -18,6 +18,7 @@ This packages includes scripts and configuration used by Holdex Platform Apps. B
     
     Available properties:
      - BUILD_FOLDER (default /build)
+     - ENV_FILE (default .env)
 
 #####test: `holdex-scripts test --env=jsdom`
 
