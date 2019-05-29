@@ -11,7 +11,12 @@ const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const paths = require('./paths');
+const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
+const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const getClientEnvironment = require('./env');
+
+const useTypeScript = fs.existsSync(paths.appTsConfig);
+
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -87,7 +92,9 @@ module.exports = {
         // https://github.com/facebookincubator/create-react-app/issues/290
         // `web` extension prefixes have been added for better support
         // for React Native Web.
-        extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
+        extensions: paths.moduleFileExtensions
+            .map(ext => `.${ext}`)
+            .filter(ext => useTypeScript || !ext.includes('ts')),
         alias: {
             // Support React Native Web
             // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -112,7 +119,7 @@ module.exports = {
             // First, run the linter.
             // It's important to do this before Babel processes the JS.
             {
-                test: /\.(js|jsx|mjs)$/,
+                test: /\.(js|mjs|jsx|ts|tsx)$/,
                 enforce: 'pre',
                 use: [
                     {
@@ -142,11 +149,58 @@ module.exports = {
                     },
                     // Process JS with Babel.
                     {
-                        test: /\.(js|jsx|mjs)$/,
+                        test: /\.(js|mjs|jsx|ts|tsx)$/,
                         include: paths.appSrc,
                         loader: require.resolve('babel-loader'),
                         options: {
+                            customize: require.resolve(
+                                'babel-preset-react-app/webpack-overrides'
+                            ),
+
+                            plugins: [
+                                [
+                                    require.resolve('babel-plugin-named-asset-import'),
+                                    {
+                                        loaderMap: {
+                                            svg: {
+                                                ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
+                                            },
+                                        },
+                                    },
+                                ],
+                            ],
+                            // This is a feature of `babel-loader` for webpack (not Babel itself).
+                            // It enables caching results in ./node_modules/.cache/babel-loader/
+                            // directory for faster rebuilds.
+                            cacheDirectory: true,
+                            cacheCompression: true,
                             compact: true,
+                        },
+                    },
+                    // Process any JS outside of the app with Babel.
+                    // Unlike the application JS, we only compile the standard ES features.
+                    {
+                        test: /\.(js|mjs)$/,
+                        exclude: /@babel(?:\/|\\{1,2})runtime/,
+                        loader: require.resolve('babel-loader'),
+                        options: {
+                            babelrc: false,
+                            configFile: false,
+                            compact: false,
+                            presets: [
+                                [
+                                    require.resolve('babel-preset-react-app/dependencies'),
+                                    { helpers: true },
+                                ],
+                            ],
+                            cacheDirectory: true,
+                            cacheCompression: true,
+
+                            // If an error happens in a package, it's possible to be
+                            // because it was compiled. Thus, we don't want the browser
+                            // debugger to show the original code. Instead, the code
+                            // being evaluated would be much more helpful.
+                            sourceMaps: false,
                         },
                     },
                     // The notation here is somewhat confusing.
@@ -375,7 +429,29 @@ module.exports = {
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
         // You can remove this if you don't use Moment.js:
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    ],
+        // TypeScript type checking
+        useTypeScript &&
+        new ForkTsCheckerWebpackPlugin({
+            typescript: resolve.sync('typescript', {
+                basedir: paths.appNodeModules,
+            }),
+            async: false,
+            useTypescriptIncrementalApi: true,
+            checkSyntacticErrors: true,
+            tsconfig: paths.appTsConfig,
+            reportFiles: [
+                '**',
+                '!**/__tests__/**',
+                '!**/?(*.)(spec|test).*',
+                '!**/src/setupProxy.*',
+                '!**/src/setupTests.*',
+            ],
+            watch: paths.appSrc,
+            silent: true,
+            // The formatter is invoked directly in WebpackDevServerUtils during development
+            formatter: typescriptFormatter,
+        }),
+    ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
     node: {

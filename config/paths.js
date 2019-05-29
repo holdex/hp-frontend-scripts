@@ -22,6 +22,20 @@ function ensureSlash(path, needsSlash) {
 	}
 }
 
+const moduleFileExtensions = [
+	'web.mjs',
+	'mjs',
+	'web.js',
+	'js',
+	'web.ts',
+	'ts',
+	'web.tsx',
+	'tsx',
+	'json',
+	'web.jsx',
+	'jsx',
+];
+
 const getPublicUrl = appPackageJson =>
 	envPublicUrl || require(appPackageJson).homepage;
 
@@ -45,6 +59,7 @@ module.exports = {
 	appPublic: resolveApp('public'),
 	appHtml: resolveApp('public/index.html'),
 	appIndexJs: resolveApp('src/index.js'),
+	appTsConfig: resolveApp('tsconfig.json'),
 	appPackageJson: resolveApp('package.json'),
 	appSrc: resolveApp('src'),
 	yarnLockFile: resolveApp('yarn.lock'),
@@ -53,3 +68,6 @@ module.exports = {
 	publicUrl: getPublicUrl(resolveApp('package.json')),
 	servedPath: getServedPath(resolveApp('package.json')),
 };
+
+
+module.exports.moduleFileExtensions = moduleFileExtensions;
