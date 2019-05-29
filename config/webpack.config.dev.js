@@ -15,6 +15,7 @@ const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpack
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
 
+
 // Check if TypeScript is setup
 const useTypeScript = fs.existsSync(paths.appTsConfig);
 
@@ -57,7 +58,7 @@ module.exports = {
 		// We include the app code last so that if there is a runtime error during
 		// initialization, it doesn't blow up the WebpackDevServer client, and
 		// changing JS code would still trigger a refresh.
-	],
+	].filter(Boolean),
 	output: {
 		// Add /* filename */ comments to generated require()s in the output.
 		pathinfo: true,
@@ -281,7 +282,7 @@ module.exports = {
 						// its runtime that would otherwise processed through "file" loader.
 						// Also exclude `html` and `json` extensions so they get processed
 						// by webpacks internal loaders.
-						exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/, /\.scss$/, /\.sass$/],
+						exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/,/\.scss$/, /\.sass$/],
 						loader: require.resolve('file-loader'),
 						options: {
 							name: 'static/media/[name].[hash:8].[ext]',

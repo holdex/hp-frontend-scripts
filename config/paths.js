@@ -52,13 +52,25 @@ function getServedPath(appPackageJson) {
 	return ensureSlash(servedUrl, true);
 }
 
+const resolveModule = (resolveFn, filePath) => {
+	const extension = moduleFileExtensions.find(extension =>
+		fs.existsSync(resolveFn(`${filePath}.${extension}`))
+	);
+
+	if (extension) {
+		return resolveFn(`${filePath}.${extension}`);
+	}
+
+	return resolveFn(`${filePath}.js`);
+};
+
 // config after eject: we're in ./config/
 module.exports = {
 	dotenv: resolveApp('.'),
 	appBuild: resolveApp('build'),
 	appPublic: resolveApp('public'),
 	appHtml: resolveApp('public/index.html'),
-	appIndexJs: resolveApp('src/index'),
+	appIndexJs: resolveModule(resolveApp('src/index')),
 	appTsConfig: resolveApp('tsconfig.json'),
 	appPackageJson: resolveApp('package.json'),
 	appSrc: resolveApp('src'),
