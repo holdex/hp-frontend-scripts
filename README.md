@@ -24,4 +24,4 @@ This packages includes scripts and configuration used by Holdex Platform Apps. B
 
 
 #### How To install
-    yarn add holdex-scripts@https://bitbucket.org/holdex/hp-frontend-scripts#<tag>
+    yarn add holdex-scripts@https://github.com/holdex/hp-frontend-scripts#<tag>
