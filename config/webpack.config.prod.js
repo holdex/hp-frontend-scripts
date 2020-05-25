@@ -304,7 +304,7 @@ module.exports = {
             },
         }),
         new HtmlWebpackPlugin({
-            inject: false,
+            inject: true,
             template: paths.notFoundHtml,
             minify: {
                 removeComments: true,
