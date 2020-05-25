@@ -13,17 +13,17 @@ const envPublicUrl = process.env.PUBLIC_URL;
 
 function ensureSlash(path, needsSlash) {
 	const hasSlash = path.endsWith('/');
-	if (hasSlash && !needsSlash) {
+  if (hasSlash && !needsSlash) {
 		return path.substr(path, path.length - 1);
-	} else if (!hasSlash && needsSlash) {
+  } else if (!hasSlash && needsSlash) {
 		return `${path}/`;
-	} else {
+  } else {
 		return path;
-	}
+  }
 }
 
 const getPublicUrl = appPackageJson =>
-	envPublicUrl || require(appPackageJson).homepage;
+  envPublicUrl || require(appPackageJson).homepage;
 
 // We use `PUBLIC_URL` environment variable or "homepage" field to infer
 // "public path" at which the app is served.
@@ -44,6 +44,7 @@ module.exports = {
 	appBuild: resolveApp('build'),
 	appPublic: resolveApp('public'),
 	appHtml: resolveApp('public/index.html'),
+    notFoundHtml: resolveApp('public/404.html'),
 	appIndexJs: resolveApp('src/index.js'),
 	appPackageJson: resolveApp('package.json'),
 	appSrc: resolveApp('src'),
